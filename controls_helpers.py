@@ -82,7 +82,7 @@ def select_all_ctrls(ctrl_suffix = "*_ctrl"):
     cmds.select(all_ctrls, replace=True)
 
 if __name__ == "__main__":
-    print_modified_ctrls()
+    mirror_ctrls_values()
     
 
     

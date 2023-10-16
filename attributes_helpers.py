@@ -254,7 +254,13 @@ def copy_attrs_values(source, target, custom_attrs_suffixes=["_attr", "_attr_pro
         if invert_translation and attr in ["tx", "ty", "tz"]:
             source_value = -source_value
         
-        if cmds.getAttr("{0}.{1}".format(target, attr), settable=True):
+        if not cmds.objExists("{0}.{1}".format(target, attr)):
+            if attr.find("_L_") > 0:
+                attr = attr.replace("_L_", "_R_")
+            elif attr.find("_R_") > 0:
+                attr = attr.replace("_R_", "_L_")
+
+        if cmds.objExists("{0}.{1}".format(target, attr)) and cmds.getAttr("{0}.{1}".format(target, attr), settable=True):
             cmds.setAttr("{0}.{1}".format(target, attr), source_value)
 
 def print_all_custom_fields_default_values(suffix = "*_ctrl"):
@@ -323,6 +329,41 @@ def reset_ctrls():
 
     for node in selection:
         __reset_ctrl(all_custom_fields_default_values, node)
+
+def reset_ctrl(ctrl):
+    """Reset the input control to their default values. For custom attributes the default values should be filled manually based on the output of the function print_all_custom_fields_default_values().
+
+    Parameters
+    ----------
+    ctrl : str
+        Selected control to reset.
+
+    Returns
+    -------
+    no return
+    """
+
+    all_custom_fields_default_values = [] # This list should be filled manually for each rig. The value should be the output of the function print_all_custom_fields_default_values().
+
+    __reset_ctrl(all_custom_fields_default_values, ctrl)
+
+def get_attrs_values(transform):
+    """Returns a dict with all the current attributes values for the given transform.
+
+    Parameters
+    ----------
+    transform : str
+        A transform to get the attributes values
+
+    Returns
+    -------
+        dict:
+            Dictionary with all the default attributes values.
+    """
+    values = {}
+    for attr in default_attrs:
+        values[attr] = cmds.getAttr(name(transform, attr))
+    return values
 
 def __reset_ctrl(all_custom_fields_default_values, node):
     custom_attrs = [custom_fields for custom_fields in all_custom_fields_default_values if custom_fields[0] == node]
