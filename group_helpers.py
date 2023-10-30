@@ -45,7 +45,7 @@ def create_group_parent_by_selection():
     for node in selection:
         create_group_parent(node)
 
-def create_group_parent(target, custom_structure=[], replace_suffix = False):
+def create_group_parent(target, custom_structure=[], replace_suffix = False, reparent = False):
     """Creates a group parent structure.
 
     Parameters
@@ -62,9 +62,12 @@ def create_group_parent(target, custom_structure=[], replace_suffix = False):
     str
         The most external created group name. 
     """
+
     if custom_structure:
-        return __create_group_parent_custom(target, custom_structure, replace_suffix = replace_suffix)
+        return __create_group_parent_custom(target, custom_structure, replace_suffix = replace_suffix, reparent = reparent)
     
+    parent = cmds.listRelatives(target, parent=True)
+
     target_translation = cmds.xform(target, query=True, worldSpace=True, translation=True)
     target_rotation = cmds.xform(target, query=True, worldSpace=True, rotation=True)
     
@@ -74,10 +77,15 @@ def create_group_parent(target, custom_structure=[], replace_suffix = False):
     cmds.parent(target, offset_group)
     cmds.parent(offset_group, external_group)
 
+    if reparent and parent is not None:
+        cmds.parent(external_group, parent)
+
     return external_group
         
-def __create_group_parent_custom(target, custom_structure, replace_suffix = False):
+def __create_group_parent_custom(target, custom_structure, replace_suffix = False, reparent = False):
     
+    parent = cmds.listRelatives(target, parent=True)
+
     target_translation = cmds.xform(target, query=True, worldSpace=True, translation=True)
     target_rotation = cmds.xform(target, query=True, worldSpace=True, rotation=True)
 
@@ -91,6 +99,9 @@ def __create_group_parent_custom(target, custom_structure, replace_suffix = Fals
             cmds.parent(groups[-2], groups[-1])
     
     cmds.parent(target, groups[0])
+    
+    if reparent and parent is not None:
+        cmds.parent(groups[-1], parent)
 
     return groups[0]
 

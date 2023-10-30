@@ -15,8 +15,8 @@ def get_parent(node):
     """
     return cmds.listRelatives(node, parent=True)[0]
 
-def get_top_parent(node):
-    """Gets the top most (most external) parent node.
+def get_top_parent(node, max_level = 99):
+    """Gets the top parent. If no max level is informed it will get the most (most external) parent node.
 
     Parameters
     ----------
@@ -30,10 +30,14 @@ def get_top_parent(node):
     """
     current_parent = node
     parent = node
+    level = 1
     while current_parent != None:
+        if level > max_level:
+            break
         current_parent = cmds.listRelatives(current_parent, fullPath=True, parent=True)
         if current_parent is not None:
             current_parent = current_parent[0]
             parent = current_parent
+            level += 1
     
     return parent

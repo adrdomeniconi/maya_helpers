@@ -66,7 +66,7 @@ def print_modified_ctrls(ctrl_suffix="_ctrl"):
 
     print(modified_ctrls)
 
-def select_all_ctrls(ctrl_suffix = "*_ctrl"):
+def select_all_ctrls(ctrl_suffix = "::*_ctrl"):
     """Select all controls based on the informed suffix
 
     Parameters
