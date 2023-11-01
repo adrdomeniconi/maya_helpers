@@ -181,7 +181,7 @@ def orient_transform_keeping_the_shape(transform, orientation=None, scale=None, 
         for pv_pos in original_pv_pos:
             cmds.xform(pv_pos[0], worldSpace=True, translation=pv_pos[1])
 
-def find_middle_point():
+def find_middle_point_from_selection():
     """Find the middle point of the bounding box around the selected objects.
 
     Parameters
@@ -196,6 +196,27 @@ def find_middle_point():
     """
     selection = cmds.ls(selection=True)
     bounding_box = cmds.exactWorldBoundingBox(selection)
+    centerX = (bounding_box[0] + bounding_box[3]) / 2.0
+    centerY = (bounding_box[1] + bounding_box[4]) / 2.0
+    centerZ = (bounding_box[2] + bounding_box[5]) / 2.0
+    bounding_box_center = [centerX, centerY, centerZ]
+
+    return bounding_box_center
+
+def find_middle_point(transforms):
+    """Find the middle point of the bounding box around the selected objects.
+
+    Parameters
+    ----------
+    trasnform: list
+        A list of objects (can be transforms, shapes, vertices...).
+        
+    Returns
+    -------
+        tuple:
+            A tuple representing the middle point vector.
+    """
+    bounding_box = cmds.exactWorldBoundingBox(transforms)
     centerX = (bounding_box[0] + bounding_box[3]) / 2.0
     centerY = (bounding_box[1] + bounding_box[4]) / 2.0
     centerZ = (bounding_box[2] + bounding_box[5]) / 2.0
