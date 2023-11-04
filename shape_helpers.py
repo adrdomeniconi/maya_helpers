@@ -1,7 +1,7 @@
 import maya.cmds as cmds
 import maya.api.OpenMaya as om
 
-def parent_shapes():
+def parent_shapes_by_selection():
     """Parent the selected shapes under the target transform. Select first the shapes and lastly the transform.
 
     Parameters
@@ -30,6 +30,29 @@ def parent_shapes():
             cmds.parent(child_shape, target, shape=True, relative=True)
     
     for source in sources:
+        cmds.delete(source)
+
+def parent_shapes(sources_shapes, target_transform):
+    """Parent the input shapes under the target transform. Select first the shapes and lastly the transform.
+
+    Parameters
+    ----------
+    sources_shapes: list
+        One or more shapes.
+    target_transform: transform
+        Name of the target transform.
+
+    Returns
+    -------
+        No return.
+    """
+    
+    for source in sources_shapes:
+        shapes = cmds.listRelatives(source, shapes=True, children=True, fullPath=True)
+        for child_shape in shapes:
+            cmds.parent(child_shape, target_transform, shape=True, relative=True)
+    
+    for source in sources_shapes:
         cmds.delete(source)
 
 def recolor_shapes_by_selection(color_id): 
@@ -126,7 +149,7 @@ def scale_shapes(transform, factor = None):
     original_pivot = cmds.xform(transform, translation=True, query=True, worldSpace=True)
 
     __select_all_shapes_cvs(transform)
-    scale_pivot = find_middle_point()
+    scale_pivot = find_middle_point(transform)
 
     cmds.xform(transform, pivots=scale_pivot, worldSpace=True)
     cmds.xform(scale=[factor[0], factor[1], factor[2]], worldSpace=True)
@@ -233,4 +256,4 @@ def __select_all_shapes_cvs(transform):
             cmds.select(cv, add=True)
 
 if __name__ == "__main__":
-    parent_shapes()
+    parent_shapes_by_selection()
